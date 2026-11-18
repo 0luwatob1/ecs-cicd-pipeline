@@ -122,6 +122,7 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+data "aws_caller_identity" "current" {}
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
   role       = aws_iam_role.ecs_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -138,7 +139,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "nginx"
-      image     = "nginx:latest"
+      image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest"
       essential = true
       portMappings = [{
         containerPort = 80
